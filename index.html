@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Dynamic Visa Card</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/vue@3"></script>
+    <link href="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.css" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
+    <style>
+      body {
+        font-family: "Roboto", serif;
+      }
+    </style>
+  </head>
+  <body class="bg-gray-200">
+  <h1 class="text-center text-3xl text-gray-900 dark:text-white py-2 mt-2">Dynamic Visa Card</h1>
+    <p class=" m-auto text-center text-base text-gray-900 dark:text-white max-w-xl">Easily customize your Visa card by editing details such as the cardholder name, number, and background to make it uniquely yours.
+</p>
+
+	<div class="bg-white border border-gray-200 shadow-sm m-auto rounded-lg mt-4 max-w-md" id="app">
+      <div class="grid grids-cols sm:grid-cols-1 gap-0">
+        <!-- Card Display -->
+        <div class="p-6 self-center">
+          <div 
+            class="shadow-sm border border-gray-200 rounded-2xl hover:-translate-y-1 object-cover ease-in duration-300" 
+            :style="{ backgroundImage: `url(${bgImage})`, backgroundSize: 'cover', backgroundRepeat: 'no-repeat' }">
+            <p class="text-2xl text-white py-4 ms-8 font-medium font-sans">Visa Classic</p>
+            <img class="max-w-sm rounded-lg ms-10" src="./img/chip.png" alt="Chip image" style="height:35px;">
+            <div class="pt-2">
+              <p class="text-center text-3xl text-white font-medium font-mono">{{ cardNo }}</p>
+              <p class="text-lg text-white font-mono ms-28 p-1">{{ exp }}</p>
+            </div>
+            <div class="flex justify-between items-center pb-4">
+              <p class="text-xl text-white ms-6 font-medium font-mono uppercase">{{ fullName }}</p>
+              <img class="h-auto max-w-sm rounded-lg me-6" src="./img/visa-logo.png" alt="Visa logo" style="height:30px;">
+            </div>
+          </div>
+        </div>
+        <!-- Input Fields -->
+        <div class="bg-white p-6 self-center border-b">
+          <p class="text-lg font-medium text-gray-900 dark:text-white pb-2 ms-2">Enter Card Details</p>
+          <div class="max-w-sm mx-auto">
+            <!-- Card Number Input -->
+				<div class="mb-4">
+				  <label for="card-number-input" class="block mb-2 text-sm font-medium text-gray-900">Card Number</label>
+				  <input 
+					type="text" 
+					v-model="cardNo" 
+					@input="formatCardNumber" 
+					id="card-number-input" 
+					class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+					placeholder="4242 4242 4242 4242" 
+					maxlength="19" 
+					required />
+				</div>
+            
+            <div class="grid grid-cols-3 gap-4 my-4">
+              <div class="col-span-2">
+                <label for="card-expiration-input" class="sr-only">Card expiration date:</label>
+                <input type="text" v-model="exp" id="card-expiration-input" 
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                  placeholder="12/23" required />
+              </div>
+              <div>
+                <label for="cvv-input" class="sr-only">Card CVV code:</label>
+                <input type="number" v-model="cvv" id="cvv-input" 
+                  class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" 
+                  placeholder="CVV" required />
+              </div>
+            </div>
+            
+            <div class="mb-6">
+              <label for="full-name-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Full Name</label>
+              <input type="text" v-model="fullName" id="full-name-input" 
+                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+         <!-- Generate button -->    
+            <button type="submit" @click="generateRandomCard"
+              class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 mb-2">
+              Generate
+            </button>
+          </div>
+		  
+          <!-- Background Image Input -->
+          <div class="my-4 px-2">
+            <label for="small-input" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Background Image</label>
+            <input 
+              type="text" 
+              v-model="bgImage" 
+              placeholder="Image link" 
+              id="small-input" 
+              class="block w-full p-2 text-gray-900 border border-gray-300 rounded-lg bg-gray-50 text-xs focus:ring-blue-500 focus:border-blue-500">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vue Script -->
+    <script>
+      Vue.createApp({
+        data() {
+          return {
+            cardNo: '2456 2365 2453 4568',
+            exp: '05/12',
+            cvv: '688',
+            fullName: 'Ankit Verma',
+            bgImage: 'https://cdn.pixabay.com/photo/2023/01/04/19/40/grass-7697505_1280.jpg', // Default background
+          //Rendom People data
+		        people: [
+        { name: 'John Doe', cardNo: '4532 1547 9863 7456', exp: '04/25', cvv: '321', bg_img: 'https://cdn.pixabay.com/photo/2018/06/28/23/08/german-3504961_1280.jpg' },
+        { name: 'Jane Smith', cardNo: '5423 4512 8976 3215', exp: '08/23', cvv: '654', bg_img: 'https://cdn.pixabay.com/photo/2024/06/21/15/18/road-8844555_1280.jpg' },
+        { name: 'Michael Brown', cardNo: '3764 8495 2135 7845', exp: '02/24', cvv: '987', bg_img: 'https://cdn.pixabay.com/photo/2016/11/29/13/13/fronds-1869757_1280.jpg' },
+        { name: 'Emily Davis', cardNo: '6011 5236 7452 1254', exp: '12/26', cvv: '458', bg_img: 'https://cdn.pixabay.com/photo/2023/08/05/13/32/hummingbird-8171118_1280.jpg' },
+        { name: 'Chris Wilson', cardNo: '4539 1487 9654 7423', exp: '03/25', cvv: '852', bg_img: 'https://cdn.pixabay.com/photo/2021/12/08/13/39/snail-6855730_1280.jpg' },
+        { name: 'Ashley Martinez', cardNo: '5123 4567 7894 6547', exp: '11/24', cvv: '369', bg_img: 'https://cdn.pixabay.com/photo/2021/05/24/12/17/rocks-6278936_1280.jpg' },
+        { name: 'David Garcia', cardNo: '4012 3487 9641 8574', exp: '06/23', cvv: '123', bg_img: 'https://cdn.pixabay.com/photo/2022/05/13/16/45/rose-7194127_1280.jpg' },
+        { name: 'Sophia Lopez', cardNo: '3742 1876 9423 6548', exp: '07/27', cvv: '456', bg_img: 'https://cdn.pixabay.com/photo/2021/12/29/18/59/st-petersburg-6902540_1280.jpg' },
+        { name: 'Ryan Harris', cardNo: '6011 7823 4975 2156', exp: '09/24', cvv: '789', bg_img: 'https://cdn.pixabay.com/photo/2023/06/11/16/06/switzerland-8056378_1280.jpg' },
+        { name: 'Olivia Clark', cardNo: '4536 7854 1245 9843', exp: '01/28', cvv: '234', bg_img: 'https://cdn.pixabay.com/photo/2022/12/16/07/23/heart-7659062_1280.jpg' },
+      ],
+		  
+		  
+		  };
+        },
+	
+	methods: {
+    formatCardNumber() {
+      // Remove all non-digit characters
+      let rawValue = this.cardNo.replace(/\D/g, '');
+      // Insert a space every 4 digits
+      this.cardNo = rawValue.replace(/(.{4})/g, '$1 ').trim();
+    },
+	
+	generateRandomCard() {
+      // Pick a random person from the array
+      const randomPerson = this.people[Math.floor(Math.random() * this.people.length)];
+      // Update card details
+      this.cardNo = randomPerson.cardNo;
+      this.exp = randomPerson.exp;
+      this.cvv = randomPerson.cvv;
+      this.fullName = randomPerson.name;
+	  this.bgImage = randomPerson.bg_img;
+    },
+	
+	}
+      }).mount('#app');
+    </script>
+  </body>
+</html>
